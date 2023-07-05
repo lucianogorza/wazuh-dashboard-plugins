@@ -19,9 +19,9 @@ version = '4.6.0'
 # App's revision number (previous rev + 1)
 revision = '01'
 # One of 'pre-alpha', 'alpha', 'beta', 'release-candidate', 'stable'
-stage = 'alpha'
+stage = 'pre-alpha'
 # Tag suffix. Usually set to stage + stage iteration.
-tag_suffix = '-alpha1'
+tag_suffix = '-pre-alpha1'
 
 # ================================================ #
 # Constants and global variables                   #
