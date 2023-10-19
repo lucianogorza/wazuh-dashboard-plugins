@@ -115,7 +115,7 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           path: ./${{ matrix.plugins.path }}/target/test-coverage/coverage-summary.json
-          title: '${{ matrix.plugins.name }} plugin code coverage (Jest)'
+          title: '${{ matrix.plugins.name }} plugin code coverage (Jest) test'
         # uses: AthleticNet/comment-test-coverage@1.2.2
         # with:
         #   token: ${{ secrets.GITHUB_TOKEN }}
