@@ -111,15 +111,11 @@ jobs:
 
       - name: Step 05 - Upload coverage results to GitHub
         if: ${{ inputs.notify_jest_coverage_summary && github.event_name == 'pull_request' }}
-        uses: dkershner6/jest-coverage-commenter-action@v1
+        uses: vhoyer/comment-test-coverage@1.4.0
         with:
-          github_token: '${{ secrets.GITHUB_TOKEN }}'
-          test_command: 'npm run test:coverage'
-          uses: vhoyer/comment-test-coverage@1.4.0
-          with:
-            token: ${{ secrets.GITHUB_TOKEN }}
-            path: ./${{ matrix.plugins.path }}/target/test-coverage/coverage-summary.json
-            title: '${{ matrix.plugins.name }} plugin code coverage (Jest)'
+          token: ${{ secrets.GITHUB_TOKEN }}
+          path: ./${{ matrix.plugins.path }}/target/test-coverage/coverage-summary.json
+          title: '${{ matrix.plugins.name }} plugin code coverage (Jest)'
         # uses: AthleticNet/comment-test-coverage@1.2.2
         # with:
         #   token: ${{ secrets.GITHUB_TOKEN }}
