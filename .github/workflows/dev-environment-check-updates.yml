@@ -47,13 +47,12 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        plugins:
-          [
-            {
-              name: 'Main',
-              path: 'wazuh/plugins/main',
-              container_path: 'wazuh',
-            },
+        plugins: [
+            # {
+            #   name: 'Main',
+            #   path: 'wazuh/plugins/main',
+            #   container_path: 'wazuh',
+            # },
             {
               name: 'Wazuh Check Updates',
               path: 'wazuh/plugins/wazuh-check-updates',
@@ -112,8 +111,17 @@ jobs:
 
       - name: Step 05 - Upload coverage results to GitHub
         if: ${{ inputs.notify_jest_coverage_summary && github.event_name == 'pull_request' }}
-        uses: AthleticNet/comment-test-coverage@1.2.2
+        uses: dkershner6/jest-coverage-commenter-action@v1
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          path: ./${{ matrix.plugins.path }}/target/test-coverage/coverage-summary.json
-          title: '${{ matrix.plugins.name }} plugin code coverage (Jest)'
+          github_token: '${{ secrets.GITHUB_TOKEN }}'
+          test_command: 'npm run test:coverage'
+          uses: vhoyer/comment-test-coverage@1.4.0
+          with:
+            token: ${{ secrets.GITHUB_TOKEN }}
+            path: ./${{ matrix.plugins.path }}/target/test-coverage/coverage-summary.json
+            title: '${{ matrix.plugins.name }} plugin code coverage (Jest)'
+        # uses: AthleticNet/comment-test-coverage@1.2.2
+        # with:
+        #   token: ${{ secrets.GITHUB_TOKEN }}
+        #   path: ./${{ matrix.plugins.path }}/target/test-coverage/coverage-summary.json
+        #   title: '${{ matrix.plugins.name }} plugin code coverage (Jest)'
