@@ -47,9 +47,19 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        plugin_name: [Main, Wazuh Check Updates]
-        plugin_container: [wazuh, wazuh-check-updates]
-        plugin_path: [wazuh/plugins/main, wazuh/plugins/wazuh-check-updates]
+        plugins:
+          [
+            {
+              name: 'Main',
+              path: 'wazuh/plugins/main',
+              container_path: 'wazuh',
+            },
+            {
+              name: 'Wazuh Check Updates',
+              path: 'wazuh/plugins/wazuh-check-updates',
+              container_path: 'wazuh-check-updates',
+            },
+          ]
 
     steps:
       - name: Step 01 - Download the plugin's source code
@@ -68,13 +78,13 @@ jobs:
           # Detect which platform to use from source code
           platform=kbn;
           echo "Detecting platform [kbn, osd]...";
-          find ${{ matrix.plugin_path }}/opensearch_dashboards.json && { platform=osd; };
+          find ${{ matrix.plugins.path }}/opensearch_dashboards.json && { platform=osd; };
           echo "Platform is $platform";
 
           # Read the platform version from the package.json file
           echo "Reading the platform version from the package.json...";
           # Support plugins whose version is defined under pluginPlatform or Kibana properties
-          platform_version=$(jq -r '.pluginPlatform.version, .kibana.version | select(. != null)' ${{ matrix.plugin_path }}/package.json);
+          platform_version=$(jq -r '.pluginPlatform.version, .kibana.version | select(. != null)' ${{ matrix.plugins.path }}/package.json);
           echo "Plugin platform version: $platform_version";
 
           # Set the environment variable to the correct platform
@@ -84,12 +94,12 @@ jobs:
           # Up the environment and run the command
           docker run -t --rm \
             -e ${docker_env_plugin_platform}=${platform_version} \
-            -v `pwd`/${{ matrix.plugin_path }}:/home/node/kbn/plugins/${{ matrix.plugin_container }} \
+            -v `pwd`/${{ matrix.plugins.path }}:/home/node/kbn/plugins/${{ matrix.plugins.container_path }} \
             ${{ inputs.docker_run_extra_args }} \
             quay.io/wazuh/${platform}-dev:${platform_version} \
             bash -c '
               yarn config set registry https://registry.yarnpkg.com;
-              cd /home/node/kbn/plugins/${{ matrix.plugin_container }} && yarn && ${{ inputs.command }};
+              cd /home/node/kbn/plugins/${{ matrix.plugins.container_path }} && yarn && ${{ inputs.command }};
             '
 
       - name: Step 04 - Upload artifact to GitHub
@@ -97,7 +107,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: ${{ inputs.artifact_name }}
-          path: ${{ matrix.plugin_path }}/${{ inputs.artifact_path }}
+          path: ${{ matrix.plugins.path }}/${{ inputs.artifact_path }}
           if-no-files-found: 'error'
 
       - name: Step 05 - Upload coverage results to GitHub
@@ -105,5 +115,5 @@ jobs:
         uses: AthleticNet/comment-test-coverage@1.2.2
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          path: ./${{ matrix.plugin_path }}/target/test-coverage/coverage-summary.json
-          title: '${{ matrix.plugin_name }} plugin code coverage (Jest)'
+          path: ./${{ matrix.plugins.path }}/target/test-coverage/coverage-summary.json
+          title: '${{ matrix.plugins.name }} plugin code coverage (Jest)'
