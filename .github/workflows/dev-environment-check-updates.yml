@@ -102,14 +102,13 @@ jobs:
               cd /home/node/kbn/plugins/${{ matrix.plugins.container_path }} && yarn && ${{ inputs.command }};
             '
 
-      - name: Step 04 - Upload artifact to GitHub
-        if: ${{ inputs.artifact_name && inputs.artifact_path }}
-        uses: actions/upload-artifact@v3
-        with:
-          name: ${{ inputs.artifact_name }}
-          path: ${{ matrix.plugins.path }}/${{ inputs.artifact_path }}
-          if-no-files-found: 'error'
-
+      # - name: Step 04 - Upload artifact to GitHub
+      #   if: ${{ inputs.artifact_name && inputs.artifact_path }}
+      #   uses: actions/upload-artifact@v3
+      #   with:
+      #     name: ${{ inputs.artifact_name }}
+      #     path: ${{ matrix.plugins.path }}/${{ inputs.artifact_path }}
+      #     if-no-files-found: 'error'
       - name: Step 05 - Upload coverage results to GitHub
         if: ${{ inputs.notify_jest_coverage_summary && github.event_name == 'pull_request' }}
         uses: lucianogorza/comment-test-coverage@1.0.3
