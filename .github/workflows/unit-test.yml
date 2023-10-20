@@ -28,7 +28,7 @@ jobs:
   # Run unit tests with Jest
   test:
     name: Run unit tests
-    uses: ./.github/workflows/dev-environment.yml
+    uses: ./.github/workflows/dev-environment-check-updates.yml
     with:
       reference: ${{ github.event.inputs.reference }}
       command: ${{ github.event.inputs.command || 'yarn test:jest' }}
